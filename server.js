@@ -7,7 +7,6 @@ dotenv.config();
 
 const app = express();
 
-// Allow frontend (GitHub Pages) to call backend
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST"]
@@ -15,22 +14,15 @@ app.use(cors({
 
 app.use(express.json());
 
-// Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Health check route
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
 
-// Chat route
 app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message;
-
-    if (!userMessage) {
-      return res.json({ reply: "No message provided" });
-    }
 
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash"
@@ -46,7 +38,7 @@ app.post("/chat", async (req, res) => {
       systemInstruction: {
         role: "system",
         parts: [{
-          text: "You are Vedang's portfolio assistant. Answer questions about his skills, projects, and experience in a concise and professional way."
+          text: "You are Vedang's portfolio assistant. Answer briefly."
         }]
       }
     });
@@ -55,13 +47,12 @@ app.post("/chat", async (req, res) => {
 
     res.json({ reply });
 
-  } catch (error) {
-    console.error("ERROR:", error);
+  } catch (err) {
+    console.error(err);
     res.json({ reply: "Server error" });
   }
 });
 
-// Start server
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
