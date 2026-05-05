@@ -24,35 +24,40 @@ app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message;
 
+    if (!userMessage) {
+      return res.json({ reply: "Empty message" });
+    }
+
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash"
     });
 
-    const result = await model.generateContent({
-      contents: [
+    const chat = model.startChat({
+      history: [
         {
           role: "user",
-          parts: [{ text: userMessage }]
+          parts: [{
+            text: "You are Vedang's portfolio assistant. Speak professionally and highlight his projects like Unity game, Tax Detection system, and Marg Dristi navigation system."
+          }]
         }
-      ],
-      systemInstruction: {
-        role: "system",
-        parts: [{
-          text: "You are Vedang's portfolio assistant. VEDANGJAISWAL | Computer Science Engineering Student | Email: rachnf99@gmail.com Phone: +91-6289126782 | Location: Bangalore, India | B.E. in Computer Science Engineering, Bangalore Institute of Technology (2025–Present, 1st Year) | Class 12, Sudhir Memorial Institute, Liluah (2025) | Achievements: JEE Mains 2025 – 92.5 Percentile, MHT CET 2025 – 98.11 Percentile | Projects: Encryption-Decryption Program (Python, reversible transformation logic), Problem Solving Practice (DSA: GCD, arrays, Hamming distance, regular coding) | Technical Skills: Python, Data Structures & Algorithms (Beginner), Git & GitHub | Profiles: GitHub – github.com/Veduisback, LinkedIn – linkedin.com/in/vedang-jaiswal-83a906317, Codeforces – https://codeforces.com/profile/veduisback, LeetCode – https://leetcode.com/u/AO1Cy7aDnH/ Objective: Motivated Computer Science student with strong problem-solving skills seeking opportunities to learn, build projects, and gain practical experience in software development | Strengths: Problem Solving, Fast Learner, Consistency, Analytical Thinking | Languages: English, Hindi"
-        }]
-      }
+      ]
     });
 
+    const result = await chat.sendMessage(userMessage);
     const reply = result.response.text();
 
     res.json({ reply });
 
   } catch (err) {
-    console.error(err);
-    res.json({ reply: "Server error" });
+    console.error("ERROR:", err?.response?.data || err.message || err);
+
+    res.json({
+      reply: "Server error. Try again later."
+    });
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
