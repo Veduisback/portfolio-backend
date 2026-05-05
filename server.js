@@ -23,6 +23,7 @@ app.get("/", (req, res) => {
 app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message;
+    console.log("User:", userMessage);
 
     if (!userMessage) {
       return res.json({ reply: "Empty message" });
@@ -43,9 +44,7 @@ app.post("/chat", async (req, res) => {
 Talk professionally and highlight:
 - Unity Game Project
 - Tax Detection System
-- Marg Dristi navigation system for visually impaired users
-- His achievements like JEE Mains 92.5 percentile and MHT CET 98.11 percentile
-- His CSE studies at Bangalore Institute of Technology`
+- Marg Dristi navigation system`
           },
           {
             role: "user",
@@ -56,22 +55,13 @@ Talk professionally and highlight:
     });
 
     const data = await response.json();
-console.log("AI RAW RESPONSE:", JSON.stringify(data, null, 2));
+
+    console.log("AI RAW RESPONSE:", JSON.stringify(data, null, 2));
 
     const reply =
       data.choices?.[0]?.message?.content ||
       data.error?.message ||
       "No response from AI";
-
-    res.json({ reply });
-
-  } catch (err) {
-    console.error("ERROR:", err);
-    res.json({ reply: "Server error. Try again later." });
-  }
-});
-    const reply =
-      data.choices?.[0]?.message?.content || "No response from AI";
 
     res.json({ reply });
 
