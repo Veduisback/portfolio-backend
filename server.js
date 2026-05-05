@@ -19,16 +19,6 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
-// ✅ ADD THIS HERE
-app.get("/models", async (req, res) => {
-  try {
-    const models = await genAI.listModels();
-    res.json(models);
-  } catch (err) {
-    console.error("MODEL ERROR:", err);
-    res.json({ error: err.message });
-  }
-});
 
 app.post("/chat", async (req, res) => {
   try {
@@ -39,31 +29,27 @@ app.post("/chat", async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash-latest"
+      model: "models/gemini-1.5-flash"
     });
 
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{
-            text: "You are Vedang's portfolio assistant. Speak professionally and highlight his projects like Unity game, Tax Detection system, and Marg Dristi navigation system."
-          }]
-        }
-      ]
-    });
+    const prompt = `
+You are Vedang's portfolio assistant.
+Talk professionally and highlight:
+- Unity Game Project
+- Tax Detection System
+- Marg Dristi navigation system
 
-    const result = await chat.sendMessage(userMessage);
+User: ${userMessage}
+`;
+
+    const result = await model.generateContent(prompt);
     const reply = result.response.text();
 
     res.json({ reply });
 
   } catch (err) {
-    console.error("ERROR:", err?.response?.data || err.message || err);
-
-    res.json({
-      reply: "Server error. Try again later."
-    });
+    console.error("ERROR:", err);
+    res.json({ reply: "Server error. Try again later." });
   }
 });
 
