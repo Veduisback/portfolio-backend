@@ -56,7 +56,20 @@ Talk professionally and highlight:
     });
 
     const data = await response.json();
+console.log("AI RAW RESPONSE:", JSON.stringify(data, null, 2));
 
+    const reply =
+      data.choices?.[0]?.message?.content ||
+      data.error?.message ||
+      "No response from AI";
+
+    res.json({ reply });
+
+  } catch (err) {
+    console.error("ERROR:", err);
+    res.json({ reply: "Server error. Try again later." });
+  }
+});
     const reply =
       data.choices?.[0]?.message?.content || "No response from AI";
 
