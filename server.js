@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import fetch from "node-fetch";
 
 dotenv.config();
 
@@ -14,12 +14,12 @@ app.use(cors({
 
 app.use(express.json());
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
+// Test route
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
 
+// Chat route
 app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message;
@@ -28,22 +28,37 @@ app.post("/chat", async (req, res) => {
       return res.json({ reply: "Empty message" });
     }
 
-    const model = genAI.getGenerativeModel({
-      model: "models/gemini-1.5-flash"
-    });
-
-    const prompt = `
-You are Vedang's portfolio assistant.
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "mistralai/mistral-7b-instruct",
+        messages: [
+          {
+            role: "system",
+            content: `You are Vedang's portfolio assistant.
 Talk professionally and highlight:
 - Unity Game Project
 - Tax Detection System
-- Marg Dristi navigation system
+- Marg Dristi navigation system for visually impaired users
+- His achievements like JEE Mains 92.5 percentile and MHT CET 98.11 percentile
+- His CSE studies at Bangalore Institute of Technology`
+          },
+          {
+            role: "user",
+            content: userMessage
+          }
+        ]
+      })
+    });
 
-User: ${userMessage}
-`;
+    const data = await response.json();
 
-    const result = await model.generateContent(prompt);
-    const reply = result.response.text();
+    const reply =
+      data.choices?.[0]?.message?.content || "No response from AI";
 
     res.json({ reply });
 
@@ -53,6 +68,7 @@ User: ${userMessage}
   }
 });
 
+// Port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
