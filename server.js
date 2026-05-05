@@ -19,6 +19,16 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
+// ✅ ADD THIS HERE
+app.get("/models", async (req, res) => {
+  try {
+    const models = await genAI.listModels();
+    res.json(models);
+  } catch (err) {
+    console.error("MODEL ERROR:", err);
+    res.json({ error: err.message });
+  }
+});
 
 app.post("/chat", async (req, res) => {
   try {
