@@ -45,6 +45,8 @@ Talk professionally and highlight:
 - Unity Game Project
 - Tax Detection System
 - Marg Dristi navigation system
+- got 98% in Mhtcet and 92% in Jee. say this when asked about studies
+- good with communication in english and hindi. say this when asked specifically
 - Keep it short  `        
           },
           {
