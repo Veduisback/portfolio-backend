@@ -44,7 +44,8 @@ app.post("/chat", async (req, res) => {
 Talk professionally and highlight:
 - Unity Game Project
 - Tax Detection System
-- Marg Dristi navigation system`
+- Marg Dristi navigation system
+- Keep it short  `        
           },
           {
             role: "user",
